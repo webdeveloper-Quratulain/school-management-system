@@ -1,0 +1,223 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Fixed choices (enums) ----------
+enum Role {
+  ADMIN
+  TEACHER
+  STUDENT
+  PARENT
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  LATE
+  LEAVE
+}
+
+enum FeeStatus {
+  UNPAID
+  PARTIAL
+  PAID
+}
+
+enum Audience {
+  ALL
+  TEACHERS
+  STUDENTS
+  PARENTS
+}
+
+enum WeekDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+// ---------- People ----------
+model User {
+  id            Int            @id @default(autoincrement())
+  email         String         @unique
+  password      String
+  name          String
+  role          Role
+  isActive      Boolean        @default(true)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  teacher       Teacher?
+  parent        Parent?
+  student       Student?
+  notifications Notification[]
+  announcements Announcement[]
+  attendanceMarked Attendance[]
+}
+
+model Teacher {
+  id             Int            @id @default(autoincrement())
+  userId         Int            @unique
+  user           User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone          String?
+  qualification  String?
+  headOfClasses  Class[]
+  classSubjects  ClassSubject[]
+}
+
+model Parent {
+  id       Int       @id @default(autoincrement())
+  userId   Int       @unique
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  phone    String?
+  students Student[]
+}
+
+model Student {
+  id          Int          @id @default(autoincrement())
+  userId      Int          @unique
+  user        User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rollNumber  String       @unique
+  dateOfBirth DateTime?
+  classId     Int?
+  class       Class?       @relation(fields: [classId], references: [id])
+  parentId    Int?
+  parent      Parent?      @relation(fields: [parentId], references: [id])
+  attendance  Attendance[]
+  results     ExamResult[]
+  fees        Fee[]
+}
+
+// ---------- School structure ----------
+model Class {
+  id             Int            @id @default(autoincrement())
+  name           String
+  section        String
+  classTeacherId Int?
+  classTeacher   Teacher?       @relation(fields: [classTeacherId], references: [id])
+  students       Student[]
+  classSubjects  ClassSubject[]
+  exams          Exam[]
+
+  @@unique([name, section])
+}
+
+model Subject {
+  id            Int            @id @default(autoincrement())
+  name          String         @unique
+  code          String         @unique
+  classSubjects ClassSubject[]
+  results       ExamResult[]
+}
+
+model ClassSubject {
+  id             Int             @id @default(autoincrement())
+  classId        Int
+  class          Class           @relation(fields: [classId], references: [id], onDelete: Cascade)
+  subjectId      Int
+  subject        Subject         @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  teacherId      Int?
+  teacher        Teacher?        @relation(fields: [teacherId], references: [id])
+  timetableSlots TimetableSlot[]
+
+  @@unique([classId, subjectId])
+}
+
+// ---------- Daily work ----------
+model Attendance {
+  id          Int              @id @default(autoincrement())
+  studentId   Int
+  student     Student          @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  date        DateTime         @db.Date
+  status      AttendanceStatus
+  remark      String?
+  markedById  Int
+  markedBy    User             @relation(fields: [markedById], references: [id])
+
+  @@unique([studentId, date])
+}
+
+model TimetableSlot {
+  id             Int          @id @default(autoincrement())
+  classSubjectId Int
+  classSubject   ClassSubject @relation(fields: [classSubjectId], references: [id], onDelete: Cascade)
+  day            WeekDay
+  startTime      String
+  endTime        String
+}
+
+model Announcement {
+  id          Int      @id @default(autoincrement())
+  title       String
+  message     String
+  audience    Audience @default(ALL)
+  createdById Int
+  createdBy   User     @relation(fields: [createdById], references: [id])
+  createdAt   DateTime @default(now())
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+// ---------- Exams ----------
+model Exam {
+  id      Int          @id @default(autoincrement())
+  name    String
+  classId Int
+  class   Class        @relation(fields: [classId], references: [id], onDelete: Cascade)
+  date    DateTime
+  results ExamResult[]
+}
+
+model ExamResult {
+  id         Int     @id @default(autoincrement())
+  examId     Int
+  exam       Exam    @relation(fields: [examId], references: [id], onDelete: Cascade)
+  studentId  Int
+  student    Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  subjectId  Int
+  subject    Subject @relation(fields: [subjectId], references: [id])
+  marks      Float
+  totalMarks Float   @default(100)
+  grade      String?
+
+  @@unique([examId, studentId, subjectId])
+}
+
+// ---------- Money ----------
+model Fee {
+  id        Int       @id @default(autoincrement())
+  studentId Int
+  student   Student   @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  title     String
+  amount    Decimal   @db.Decimal(10, 2)
+  dueDate   DateTime
+  status    FeeStatus @default(UNPAID)
+  payments  Payment[]
+  createdAt DateTime  @default(now())
+}
+
+model Payment {
+  id     Int      @id @default(autoincrement())
+  feeId  Int
+  fee    Fee      @relation(fields: [feeId], references: [id], onDelete: Cascade)
+  amount Decimal  @db.Decimal(10, 2)
+  paidAt DateTime @default(now())
+  method String
+  note   String?
+}
