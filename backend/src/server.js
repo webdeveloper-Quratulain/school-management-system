@@ -10,6 +10,8 @@ import teacherRoutes from "./routes/teachers.js";
 import parentRoutes from "./routes/parents.js";
 import studentRoutes from "./routes/students.js";
 import attendanceRoutes from "./routes/attendance.js";
+import announcementRoutes from "./routes/announcements.js";
+import notificationRoutes from "./routes/notifications.js";
 
 const app = express();
 
@@ -22,6 +24,8 @@ app.use("/api/teachers", teacherRoutes);
 app.use("/api/parents", parentRoutes);
 app.use("/api/students", studentRoutes);
 app.use("/api/attendance", attendanceRoutes);
+app.use("/api/announcements", announcementRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 
 app.get("/", (req, res) => {
