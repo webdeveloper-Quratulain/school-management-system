@@ -9,6 +9,7 @@ import subjectRoutes from "./routes/subjects.js";
 import teacherRoutes from "./routes/teachers.js";
 import parentRoutes from "./routes/parents.js";
 import studentRoutes from "./routes/students.js";
+import attendanceRoutes from "./routes/attendance.js";
 
 const app = express();
 
@@ -20,6 +21,8 @@ app.use("/api/subjects", subjectRoutes);
 app.use("/api/teachers", teacherRoutes);
 app.use("/api/parents", parentRoutes);
 app.use("/api/students", studentRoutes);
+app.use("/api/attendance", attendanceRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("School Management API is running");
