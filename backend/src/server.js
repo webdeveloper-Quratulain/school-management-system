@@ -15,6 +15,7 @@ import notificationRoutes from "./routes/notifications.js";
 import classSubjectRoutes from "./routes/classSubjects.js";
 import examRoutes from "./routes/exams.js";
 import feeRoutes from "./routes/fees.js";
+import timetableRoutes from "./routes/timetable.js";
 
 const app = express();
 
@@ -32,6 +33,14 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/class-subjects", classSubjectRoutes);
 app.use("/api/exams", examRoutes);
 app.use("/api/fees", feeRoutes);
+app.use("/api/timetable", timetableRoutes);
+app.use((err, req, res, next) => {
+  if (err.type === "entity.parse.failed") {
+    return res.status(400).json({ message: "Invalid JSON in request body" });
+  }
+  console.error(err);
+  res.status(500).json({ message: "Something went wrong" });
+});
 
 
 app.get("/", (req, res) => {
