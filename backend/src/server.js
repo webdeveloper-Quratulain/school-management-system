@@ -6,6 +6,7 @@ import prisma from "./lib/prisma.js";
 import authRoutes from "./routes/auth.js";
 import classRoutes from "./routes/classes.js";
 import subjectRoutes from "./routes/subjects.js";
+import teacherRoutes from "./routes/teachers.js";
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/classes", classRoutes);
 app.use("/api/subjects", subjectRoutes);
+app.use("/api/teachers", teacherRoutes);
 
 app.get("/", (req, res) => {
   res.send("School Management API is running");
