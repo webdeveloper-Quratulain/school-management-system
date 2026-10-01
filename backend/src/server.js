@@ -12,6 +12,9 @@ import studentRoutes from "./routes/students.js";
 import attendanceRoutes from "./routes/attendance.js";
 import announcementRoutes from "./routes/announcements.js";
 import notificationRoutes from "./routes/notifications.js";
+import classSubjectRoutes from "./routes/classSubjects.js";
+import examRoutes from "./routes/exams.js";
+import feeRoutes from "./routes/fees.js";
 
 const app = express();
 
@@ -26,6 +29,9 @@ app.use("/api/students", studentRoutes);
 app.use("/api/attendance", attendanceRoutes);
 app.use("/api/announcements", announcementRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/class-subjects", classSubjectRoutes);
+app.use("/api/exams", examRoutes);
+app.use("/api/fees", feeRoutes);
 
 
 app.get("/", (req, res) => {
