@@ -5,10 +5,12 @@ import { useAuth } from "../AuthContext";
 const NAV = [
   { to: "/", label: "Dashboard", roles: ["ADMIN", "TEACHER", "STUDENT", "PARENT"], end: true },
   { to: "/classes", label: "Classes", roles: ["ADMIN"] },
+  { to: "/class-setup", label: "Class setup", roles: ["ADMIN"] },
   { to: "/subjects", label: "Subjects", roles: ["ADMIN"] },
   { to: "/teachers", label: "Teachers", roles: ["ADMIN"] },
   { to: "/parents", label: "Parents", roles: ["ADMIN"] },
   { to: "/students", label: "Students", roles: ["ADMIN"] },
+  { to: "/exams", label: "Exams", roles: ["ADMIN"] },
   { to: "/attendance", label: "Attendance", roles: ["ADMIN", "TEACHER"] },
   { to: "/marks", label: "Marks", roles: ["ADMIN", "TEACHER"] },
 ];

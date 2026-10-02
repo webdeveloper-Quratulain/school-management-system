@@ -4,6 +4,8 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Classes from "./pages/admin/Classes";
+import ClassSetup from "./pages/admin/ClassSetup";
+import Exams from "./pages/admin/Exams";
 import Subjects from "./pages/admin/Subjects";
 import Teachers from "./pages/admin/Teachers";
 import Parents from "./pages/admin/Parents";
@@ -20,10 +22,12 @@ export default function App() {
           <Route index element={<Dashboard />} />
           <Route element={<ProtectedRoute roles={["ADMIN"]} />}>
             <Route path="classes" element={<Classes />} />
+            <Route path="class-setup" element={<ClassSetup />} />
             <Route path="subjects" element={<Subjects />} />
             <Route path="teachers" element={<Teachers />} />
             <Route path="parents" element={<Parents />} />
             <Route path="students" element={<Students />} />
+            <Route path="exams" element={<Exams />} />
           </Route>
           <Route element={<ProtectedRoute roles={["ADMIN", "TEACHER"]} />}>
             <Route path="attendance" element={<Attendance />} />
