@@ -17,6 +17,41 @@ router.get("/", authorize("ADMIN", "TEACHER"), async (req, res) => {
     res.status(500).json({ message: "Something went wrong" });
   }
 });
+router.get("/mine", authorize("TEACHER"), async (req, res) => {
+  try {
+    const teacher = await prisma.teacher.findUnique({ where: { userId: req.user.id } });
+    if (!teacher) return res.json([]);
+
+    const classes = await prisma.class.findMany({
+      where: {
+        OR: [
+          { classTeacherId: teacher.id },
+          { classSubjects: { some: { teacherId: teacher.id } } },
+        ],
+      },
+      include: {
+        classSubjects: {
+          where: { teacherId: teacher.id },
+          include: { subject: true },
+        },
+      },
+      orderBy: [{ name: "asc" }, { section: "asc" }],
+    });
+
+    res.json(
+      classes.map((c) => ({
+        id: c.id,
+        name: c.name,
+        section: c.section,
+        isClassTeacher: c.classTeacherId === teacher.id,
+        subjects: c.classSubjects.map((cs) => ({ id: cs.subject.id, name: cs.subject.name })),
+      }))
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+});
 
 router.post("/", authorize("ADMIN"), async (req, res) => {
   try {

@@ -91,7 +91,7 @@ router.get("/", authorize("ADMIN", "TEACHER"), async (req, res) => {
     }
 
     const students = await prisma.student.findMany({
-      where: { classId },
+    where: { classId, user: { isActive: true } },
       include: {
         user: { select: { name: true } },
         attendance: { where: { date: day } },
