@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
-import { api, clearToken, getToken, setToken, setUnauthorizedHandler } from "./api";
+import { api, clearToken, getToken, setToken, setUnauthorizedHandler, TOKEN_KEY } from "./api";
 
 const AuthContext = createContext(null);
 
@@ -15,6 +15,16 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     setUnauthorizedHandler(logout);
   }, [logout]);
+
+  useEffect(() => {
+    function onStorage(e) {
+      if (e.key === null || e.key === TOKEN_KEY) {
+        window.location.reload();
+      }
+    }
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
+  }, []);
 
   useEffect(() => {
     if (!getToken()) return;
