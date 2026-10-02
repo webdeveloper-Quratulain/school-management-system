@@ -4,6 +4,9 @@ import { useAuth } from "../AuthContext";
 
 const NAV = [
   { to: "/", label: "Dashboard", roles: ["ADMIN", "TEACHER", "STUDENT", "PARENT"], end: true },
+  { to: "/classes", label: "Classes", roles: ["ADMIN"] },
+  { to: "/subjects", label: "Subjects", roles: ["ADMIN"] },
+  { to: "/teachers", label: "Teachers", roles: ["ADMIN"] },
 ];
 
 export default function Layout() {

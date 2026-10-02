@@ -3,6 +3,10 @@ import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import Classes from "./pages/admin/Classes";
+import Subjects from "./pages/admin/Subjects";
+import Teachers from "./pages/admin/Teachers";
+
 
 export default function App() {
   return (
@@ -11,6 +15,11 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />
+          <Route element={<ProtectedRoute roles={["ADMIN"]} />}>
+            <Route path="classes" element={<Classes />} />
+            <Route path="subjects" element={<Subjects />} />
+            <Route path="teachers" element={<Teachers />} />
+          </Route>
         </Route>
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
