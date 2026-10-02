@@ -7,6 +7,8 @@ const NAV = [
   { to: "/classes", label: "Classes", roles: ["ADMIN"] },
   { to: "/subjects", label: "Subjects", roles: ["ADMIN"] },
   { to: "/teachers", label: "Teachers", roles: ["ADMIN"] },
+  { to: "/parents", label: "Parents", roles: ["ADMIN"] },
+  { to: "/students", label: "Students", roles: ["ADMIN"] },
 ];
 
 export default function Layout() {

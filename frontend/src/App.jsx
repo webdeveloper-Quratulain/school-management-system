@@ -6,7 +6,8 @@ import Login from "./pages/Login";
 import Classes from "./pages/admin/Classes";
 import Subjects from "./pages/admin/Subjects";
 import Teachers from "./pages/admin/Teachers";
-
+import Parents from "./pages/admin/Parents";
+import Students from "./pages/admin/Students";
 
 export default function App() {
   return (
@@ -19,6 +20,8 @@ export default function App() {
             <Route path="classes" element={<Classes />} />
             <Route path="subjects" element={<Subjects />} />
             <Route path="teachers" element={<Teachers />} />
+            <Route path="parents" element={<Parents />} />
+            <Route path="students" element={<Students />} />
           </Route>
         </Route>
       </Route>
