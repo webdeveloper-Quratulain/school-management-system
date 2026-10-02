@@ -13,6 +13,10 @@ const NAV = [
   { to: "/exams", label: "Exams", roles: ["ADMIN"] },
   { to: "/attendance", label: "Attendance", roles: ["ADMIN", "TEACHER"] },
   { to: "/marks", label: "Marks", roles: ["ADMIN", "TEACHER"] },
+  { to: "/my-timetable", label: "Timetable", roles: ["STUDENT", "PARENT"] },
+  { to: "/my-attendance", label: "Attendance", roles: ["STUDENT", "PARENT"] },
+  { to: "/my-results", label: "Results", roles: ["STUDENT", "PARENT"] },
+  { to: "/my-fees", label: "Fees", roles: ["STUDENT", "PARENT"] },
 ];
 
 export default function Layout() {

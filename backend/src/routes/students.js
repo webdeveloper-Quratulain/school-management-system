@@ -5,6 +5,38 @@ import { authenticate, authorize } from "../middleware/auth.js";
 
 const router = Router();
 router.use(authenticate);
+router.get("/mine", authorize("STUDENT", "PARENT"), async (req, res) => {
+  try {
+    const owner =
+      req.user.role === "STUDENT"
+        ? { userId: req.user.id }
+        : { parent: { userId: req.user.id } };
+
+    const students = await prisma.student.findMany({
+      where: { ...owner, user: { isActive: true } },
+      include: {
+        class: true,
+        user: { select: { name: true } },
+      },
+      orderBy: { rollNumber: "asc" },
+    });
+
+    res.json(
+      students.map((s) => ({
+        id: s.id,
+        name: s.user.name,
+        rollNumber: s.rollNumber,
+        classId: s.classId,
+        class: s.class
+          ? { id: s.class.id, name: s.class.name, section: s.class.section }
+          : null,
+      }))
+    );
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong" });
+  }
+});
 
 const userFields = { id: true, name: true, email: true, isActive: true };
 

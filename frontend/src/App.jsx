@@ -12,6 +12,10 @@ import Parents from "./pages/admin/Parents";
 import Students from "./pages/admin/Students";
 import Attendance from "./pages/teacher/Attendance";
 import Marks from "./pages/teacher/Marks";
+import MyTimetable from "./pages/student/MyTimetable";
+import MyAttendance from "./pages/student/MyAttendance";
+import MyResults from "./pages/student/MyResults";
+import MyFees from "./pages/student/MyFees";
 
 export default function App() {
   return (
@@ -32,6 +36,12 @@ export default function App() {
           <Route element={<ProtectedRoute roles={["ADMIN", "TEACHER"]} />}>
             <Route path="attendance" element={<Attendance />} />
             <Route path="marks" element={<Marks />} />
+          </Route>
+          <Route element={<ProtectedRoute roles={["STUDENT", "PARENT"]} />}>
+            <Route path="my-timetable" element={<MyTimetable />} />
+            <Route path="my-attendance" element={<MyAttendance />} />
+            <Route path="my-results" element={<MyResults />} />
+            <Route path="my-fees" element={<MyFees />} />
           </Route>
         </Route>
       </Route>
