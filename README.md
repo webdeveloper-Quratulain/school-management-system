@@ -6,7 +6,7 @@ Built with React, Node.js/Express and PostgreSQL. Fully responsive, so it works 
 
 ## Demo
 
-- **Demo video:** _WhatsApp Video 2026-10-03 at 8.45.29 PM_
+- - **Demo video:** [Watch the demo](WhatsApp%20Video%202026-10-03%20at%208.45.29%20PM.mp4)
 - **Screenshots:** _add a few images here, for example `docs/screenshots/dashboard.png`_
 
 ## Features
