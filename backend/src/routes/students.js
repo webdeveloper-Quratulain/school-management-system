@@ -127,14 +127,50 @@ router.post("/", authorize("ADMIN"), async (req, res) => {
 
 router.put("/:id", authorize("ADMIN"), async (req, res) => {
   try {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) return res.status(400).json({ message: "Invalid student id" });
+
     const { name, email, rollNumber, dateOfBirth, classId, parentId } = req.body;
+
+    const classValue = classId === undefined ? undefined : classId ? Number(classId) : null;
+    const parentValue = parentId === undefined ? undefined : parentId ? Number(parentId) : null;
+    if (
+      (classValue && !Number.isInteger(classValue)) ||
+      (parentValue && !Number.isInteger(parentValue))
+    ) {
+      return res.status(400).json({ message: "Invalid class or parent" });
+    }
+    if (classValue && !(await prisma.class.findUnique({ where: { id: classValue } }))) {
+      return res.status(400).json({ message: "The class you selected does not exist" });
+    }
+    if (parentValue && !(await prisma.parent.findUnique({ where: { id: parentValue } }))) {
+      return res.status(400).json({ message: "The parent you selected does not exist" });
+    }
+
+    let dob;
+    if (dateOfBirth !== undefined) {
+      if (dateOfBirth === null || dateOfBirth === "") {
+        dob = null;
+      } else {
+        const d = new Date(dateOfBirth);
+        if (isNaN(d.getTime())) {
+          return res.status(400).json({ message: "Date of birth is not a valid date" });
+        }
+        dob = d;
+      }
+    }
+
     const student = await prisma.student.update({
-      where: { id: Number(req.params.id) },
+      where: { id },
       data: {
         ...(rollNumber && { rollNumber: String(rollNumber).trim() }),
-        ...(dateOfBirth !== undefined && { dateOfBirth: dateOfBirth ? new Date(dateOfBirth) : null }),
-        ...(classId !== undefined && { classId: classId || null }),
-        ...(parentId !== undefined && { parentId: parentId || null }),
+        ...(dob !== undefined && { dateOfBirth: dob }),
+        ...(classValue !== undefined && {
+          class: classValue ? { connect: { id: classValue } } : { disconnect: true },
+        }),
+        ...(parentValue !== undefined && {
+          parent: parentValue ? { connect: { id: parentValue } } : { disconnect: true },
+        }),
         user: {
           update: {
             ...(name && { name: name.trim() }),
@@ -147,8 +183,9 @@ router.put("/:id", authorize("ADMIN"), async (req, res) => {
     res.json(student);
   } catch (error) {
     if (error.code === "P2025") return res.status(404).json({ message: "Student not found" });
-    if (error.code === "P2002") return res.status(409).json({ message: "This email or roll number is already in use" });
-    if (error.code === "P2003") return res.status(400).json({ message: "The class or parent you selected does not exist" });
+    if (error.code === "P2002") {
+      return res.status(409).json({ message: "This email or roll number is already in use" });
+    }
     console.error(error);
     res.status(500).json({ message: "Something went wrong" });
   }
