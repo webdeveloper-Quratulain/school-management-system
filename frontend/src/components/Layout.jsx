@@ -11,6 +11,7 @@ const NAV = [
   { to: "/parents", label: "Parents", roles: ["ADMIN"] },
   { to: "/students", label: "Students", roles: ["ADMIN"] },
   { to: "/exams", label: "Exams", roles: ["ADMIN"] },
+  { to: "/fees", label: "Fees", roles: ["ADMIN"] },
   { to: "/attendance", label: "Attendance", roles: ["ADMIN", "TEACHER"] },
   { to: "/marks", label: "Marks", roles: ["ADMIN", "TEACHER"] },
   { to: "/my-timetable", label: "Timetable", roles: ["STUDENT", "PARENT"] },

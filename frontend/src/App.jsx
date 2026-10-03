@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import Classes from "./pages/admin/Classes";
 import ClassSetup from "./pages/admin/ClassSetup";
 import Exams from "./pages/admin/Exams";
+import Fees from "./pages/admin/Fees";
 import Subjects from "./pages/admin/Subjects";
 import Teachers from "./pages/admin/Teachers";
 import Parents from "./pages/admin/Parents";
@@ -32,6 +33,7 @@ export default function App() {
             <Route path="parents" element={<Parents />} />
             <Route path="students" element={<Students />} />
             <Route path="exams" element={<Exams />} />
+            <Route path="fees" element={<Fees />} />
           </Route>
           <Route element={<ProtectedRoute roles={["ADMIN", "TEACHER"]} />}>
             <Route path="attendance" element={<Attendance />} />
