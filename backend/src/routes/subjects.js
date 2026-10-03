@@ -5,7 +5,7 @@ import { authenticate, authorize } from "../middleware/auth.js";
 const router = Router();
 router.use(authenticate);
 
-router.get("/", authorize("ADMIN", "TEACHER"), async (req, res) => {
+router.get("/", authorize("ADMIN"), async (req, res) => {
   try {
     const subjects = await prisma.subject.findMany({ orderBy: { name: "asc" } });
     res.json(subjects);
@@ -61,6 +61,9 @@ router.delete("/:id", authorize("ADMIN"), async (req, res) => {
     res.json({ message: "Subject deleted" });
   } catch (error) {
     if (error.code === "P2025") return res.status(404).json({ message: "Subject not found" });
+        if (error.code === "P2003") {
+      return res.status(409).json({ message: "This subject already has exam marks, so it cannot be deleted" });
+    }
     console.error(error);
     res.status(500).json({ message: "Something went wrong" });
   }

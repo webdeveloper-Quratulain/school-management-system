@@ -104,7 +104,11 @@ router.get("/student/:studentId", authorize("ADMIN", "STUDENT", "PARENT"), async
       where: { id: studentId },
       include: { parent: true },
     });
-    if (!student) return res.status(404).json({ message: "Student not found" });
+    if (!student) {
+  return req.user.role === "ADMIN"
+    ? res.status(404).json({ message: "Student not found" })
+    : res.status(403).json({ message: "You do not have permission to view this student" });
+}
 
     const { role, id } = req.user;
     const allowed =

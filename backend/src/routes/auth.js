@@ -6,27 +6,32 @@ import { authenticate } from "../middleware/auth.js";
 
 const router = Router();
 
+// Used when the email does not exist, so a wrong email takes as long to reject as a wrong password
+const DUMMY_HASH = bcrypt.hashSync("not-a-real-password", 10);
+
 router.post("/login", async (req, res) => {
   try {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const { email, password } = req.body ?? {};
+    if (typeof email !== "string" || typeof password !== "string" || !email.trim() || !password) {
       return res.status(400).json({ message: "Email and password are required" });
+    }
+    if (email.length > 200 || password.length > 200) {
+      return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase().trim() },
     });
 
-    const valid = user && user.isActive && (await bcrypt.compare(password, user.password));
-    if (!valid) {
+    const matches = await bcrypt.compare(password, user ? user.password : DUMMY_HASH);
+    if (!user || !user.isActive || !matches) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
-    const token = jwt.sign(
-      { id: user.id, role: user.role },
-      process.env.JWT_SECRET,
-      { expiresIn: "1d" }
-    );
+    const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
+      algorithm: "HS256",
+      expiresIn: "1d",
+    });
 
     res.json({
       token,

@@ -5,7 +5,7 @@ import { authenticate, authorize } from "../middleware/auth.js";
 const router = Router();
 router.use(authenticate);
 
-router.get("/", authorize("ADMIN", "TEACHER"), async (req, res) => {
+router.get("/", authorize("ADMIN"), async (req, res) => {
   try {
     const classId = req.query.classId ? Number(req.query.classId) : undefined;
     const items = await prisma.classSubject.findMany({

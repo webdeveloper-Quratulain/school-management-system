@@ -42,9 +42,32 @@ const userFields = { id: true, name: true, email: true, isActive: true };
 
 router.get("/", authorize("ADMIN", "TEACHER"), async (req, res) => {
   try {
-    const { classId } = req.query;
+    const classId = req.query.classId ? Number(req.query.classId) : null;
+    if (req.query.classId && !Number.isInteger(classId)) {
+      return res.status(400).json({ message: "Invalid classId" });
+    }
+
+    if (req.user.role === "TEACHER") {
+      if (!classId) return res.status(400).json({ message: "classId is required" });
+      const teacher = await prisma.teacher.findUnique({ where: { userId: req.user.id } });
+      const allowed =
+        teacher &&
+        (await prisma.class.count({
+          where: {
+            id: classId,
+            OR: [
+              { classTeacherId: teacher.id },
+              { classSubjects: { some: { teacherId: teacher.id } } },
+            ],
+          },
+        })) > 0;
+      if (!allowed) {
+        return res.status(403).json({ message: "You can only view your own classes" });
+      }
+    }
+
     const students = await prisma.student.findMany({
-      where: classId ? { classId: Number(classId) } : {},
+      where: classId ? { classId } : {},
       include: {
         user: { select: userFields },
         class: true,

@@ -5,7 +5,7 @@ import { authenticate, authorize } from "../middleware/auth.js";
 const router = Router();
 router.use(authenticate);
 
-router.get("/", authorize("ADMIN", "TEACHER"), async (req, res) => {
+router.get("/", authorize("ADMIN"), async (req, res) => {
   try {
     const classes = await prisma.class.findMany({
       include: { _count: { select: { students: true } } },
