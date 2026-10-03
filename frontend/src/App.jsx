@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router";
 import Layout from "./components/Layout";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Announcements from "./pages/Announcements";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import Classes from "./pages/admin/Classes";
@@ -27,6 +28,7 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<Layout />}>
           <Route index element={<Dashboard />} />
+          <Route path="announcements" element={<Announcements />} />
           <Route element={<ProtectedRoute roles={["ADMIN"]} />}>
             <Route path="classes" element={<Classes />} />
             <Route path="class-setup" element={<ClassSetup />} />

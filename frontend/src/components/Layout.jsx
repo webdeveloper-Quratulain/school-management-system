@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
 import { useAuth } from "../AuthContext";
+import NotificationBell from "./NotificationBell";
 
 const NAV = [
   { to: "/", label: "Dashboard", roles: ["ADMIN", "TEACHER", "STUDENT", "PARENT"], end: true },
+  { to: "/announcements", label: "Announcements", roles: ["ADMIN", "TEACHER", "STUDENT", "PARENT"] },
   { to: "/classes", label: "Classes", roles: ["ADMIN"] },
   { to: "/class-setup", label: "Class setup", roles: ["ADMIN"] },
   { to: "/subjects", label: "Subjects", roles: ["ADMIN"] },
@@ -70,6 +72,7 @@ export default function Layout() {
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center justify-end gap-4 bg-white px-6 py-3 shadow-sm">
+          <NotificationBell />
           <span className="text-sm text-slate-600">
             {user.name} · {user.role}
           </span>
