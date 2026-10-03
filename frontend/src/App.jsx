@@ -11,8 +11,10 @@ import Subjects from "./pages/admin/Subjects";
 import Teachers from "./pages/admin/Teachers";
 import Parents from "./pages/admin/Parents";
 import Students from "./pages/admin/Students";
+import Timetable from "./pages/admin/Timetable";
 import Attendance from "./pages/teacher/Attendance";
 import Marks from "./pages/teacher/Marks";
+import MySchedule from "./pages/teacher/MySchedule";
 import MyTimetable from "./pages/student/MyTimetable";
 import MyAttendance from "./pages/student/MyAttendance";
 import MyResults from "./pages/student/MyResults";
@@ -32,8 +34,12 @@ export default function App() {
             <Route path="teachers" element={<Teachers />} />
             <Route path="parents" element={<Parents />} />
             <Route path="students" element={<Students />} />
+            <Route path="timetable" element={<Timetable />} />
             <Route path="exams" element={<Exams />} />
             <Route path="fees" element={<Fees />} />
+          </Route>
+          <Route element={<ProtectedRoute roles={["TEACHER"]} />}>
+            <Route path="my-schedule" element={<MySchedule />} />
           </Route>
           <Route element={<ProtectedRoute roles={["ADMIN", "TEACHER"]} />}>
             <Route path="attendance" element={<Attendance />} />
