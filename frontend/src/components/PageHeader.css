@@ -1,0 +1,38 @@
+.page-header {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-bottom: 20px;
+}
+
+.page-header__extra {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.page-header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a4033;
+}
+
+.page-header h1::after {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 4px;
+  margin-top: 6px;
+  border-radius: 2px;
+  background: #f5b82e;
+}
+
+.page-header p {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: #5b6b64;
+}

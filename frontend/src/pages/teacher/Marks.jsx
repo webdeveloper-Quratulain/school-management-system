@@ -1,10 +1,13 @@
 import { useEffect, useState } from "react";
+import { PenLine } from "lucide-react";
 import { api } from "../../api";
 import { useAuth } from "../../AuthContext";
 import { useClasses } from "../../useClasses";
+import PageHeader from "../../components/PageHeader";
+import EmptyState from "../../components/EmptyState";
 
 const selectClass =
-  "w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
+  "w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm focus:border-[#1a4033] focus:outline-none";
 const labelClass = "mb-1 block text-sm font-medium text-slate-700";
 
 export default function Marks() {
@@ -95,6 +98,20 @@ export default function Marks() {
     };
   }, [ready, key, classId, examId, subjectId]);
 
+  // hide the green message after 4 seconds
+  useEffect(() => {
+    if (!message) return;
+    const t = setTimeout(() => setMessage(""), 4000);
+    return () => clearTimeout(t);
+  }, [message]);
+
+  // hide the red error after 6 seconds
+  useEffect(() => {
+    if (!error) return;
+    const t = setTimeout(() => setError(""), 6000);
+    return () => clearTimeout(t);
+  }, [error]);
+
   function handleClassChange(e) {
     setClassId(e.target.value);
     setExamId("");
@@ -162,143 +179,167 @@ export default function Marks() {
   }
 
   const shownError = error || classesError;
+  const enteredCount = rows.filter((r) => r.marks.trim() !== "").length;
 
   return (
-    <div>
-      <h1 className="mb-4 text-2xl font-semibold text-slate-800">Enter marks</h1>
+    <>
+      <PageHeader title="Enter marks" subtitle="Choose a class, exam and subject, then enter each student's marks.">
+        {ready && !loading && rows.length > 0 && (
+          <span className="stat-chip stat-chip--present">
+            <b>{enteredCount}</b> of {rows.length} entered
+          </span>
+        )}
+      </PageHeader>
 
-      {shownError && (
-        <div className="mb-4 rounded bg-red-50 px-3 py-2 text-sm text-red-700">{shownError}</div>
-      )}
-      {message && (
-        <div className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700">{message}</div>
-      )}
+      <div className="page-body">
+        {shownError && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {shownError}
+          </div>
+        )}
+        {message && (
+          <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">
+            {message}
+          </div>
+        )}
 
-      <div className="mb-4 grid gap-3 sm:grid-cols-3">
-        <div>
-          <label className={labelClass} htmlFor="class">Class</label>
-          <select id="class" value={classId} onChange={handleClassChange} className={selectClass}>
-            <option value="">{classesLoading ? "Loading..." : "Choose a class"}</option>
-            {classes.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.name} {c.section}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className={labelClass} htmlFor="exam">Exam</label>
-          <select
-            id="exam"
-            value={examId}
-            onChange={handleExamChange}
-            disabled={!classId}
-            className={selectClass}
-          >
-            <option value="">Choose an exam</option>
-            {exams.map((x) => (
-              <option key={x.id} value={x.id}>
-                {x.name} ({x.date.slice(0, 10)})
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div>
-          <label className={labelClass} htmlFor="subject">Subject</label>
-          <select
-            id="subject"
-            value={subjectId}
-            onChange={handleSubjectChange}
-            disabled={!classId}
-            className={selectClass}
-          >
-            <option value="">Choose a subject</option>
-            {subjects.map((s) => (
-              <option key={s.id} value={s.id}>
-                {s.name}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
-
-      {classId && subjects.length === 0 && user.role === "TEACHER" && (
-        <p className="mb-4 text-sm text-slate-500">
-          You don't teach a subject in this class, so you can't enter marks for it.
-        </p>
-      )}
-      {classId && exams.length === 0 && (
-        <p className="mb-4 text-sm text-slate-500">No exams have been created for this class yet.</p>
-      )}
-      {!classesLoading && classes.length === 0 && (
-        <p className="text-sm text-slate-500">
-          No classes are assigned to you yet. Ask the admin to assign you to a class.
-        </p>
-      )}
-
-      {ready && (
-        <div className="rounded-lg bg-white shadow">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
-            <span className="text-sm text-slate-600">
-              {loading ? "Loading..." : `${rows.length} student(s)`}
-            </span>
-            <label className="flex items-center gap-2 text-sm text-slate-700">
-              Total marks
-              <input
-                type="number"
-                min="1"
-                value={totalMarks}
-                onChange={(e) => setTotalMarks(e.target.value)}
-                className="w-24 rounded border border-slate-300 px-2 py-1"
-              />
-            </label>
+        <div className="card mb-4 grid gap-3 sm:grid-cols-3">
+          <div>
+            <label className={labelClass} htmlFor="class">Class</label>
+            <select id="class" value={classId} onChange={handleClassChange} className={selectClass}>
+              <option value="">{classesLoading ? "Loading..." : "Choose a class"}</option>
+              {classes.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.name} {c.section}
+                </option>
+              ))}
+            </select>
           </div>
 
-          {!loading && rows.length === 0 && (
-            <p className="px-4 py-6 text-center text-sm text-slate-500">
-              No active students in this class.
-            </p>
-          )}
+          <div>
+            <label className={labelClass} htmlFor="exam">Exam</label>
+            <select
+              id="exam"
+              value={examId}
+              onChange={handleExamChange}
+              disabled={!classId}
+              className={selectClass}
+            >
+              <option value="">Choose an exam</option>
+              {exams.map((x) => (
+                <option key={x.id} value={x.id}>
+                  {x.name} ({x.date.slice(0, 10)})
+                </option>
+              ))}
+            </select>
+          </div>
 
-          <ul>
-            {rows.map((r) => (
-              <li
-                key={r.studentId}
-                className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3 first:border-t-0"
-              >
-                <div>
-                  <div className="font-medium text-slate-800">{r.name}</div>
-                  <div className="text-xs text-slate-500">Roll no. {r.rollNumber}</div>
-                </div>
+          <div>
+            <label className={labelClass} htmlFor="subject">Subject</label>
+            <select
+              id="subject"
+              value={subjectId}
+              onChange={handleSubjectChange}
+              disabled={!classId}
+              className={selectClass}
+            >
+              <option value="">Choose a subject</option>
+              {subjects.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        {classId && subjects.length === 0 && user.role === "TEACHER" && (
+          <p className="mb-4 text-sm text-slate-500">
+            You don't teach a subject in this class, so you can't enter marks for it.
+          </p>
+        )}
+        {classId && exams.length === 0 && (
+          <p className="mb-4 text-sm text-slate-500">
+            No exams have been created for this class yet.
+          </p>
+        )}
+        {!classesLoading && classes.length === 0 && (
+          <p className="text-sm text-slate-500">
+            No classes are assigned to you yet. Ask the admin to assign you to a class.
+          </p>
+        )}
+
+        {!ready && classes.length > 0 && (
+          <EmptyState
+            icon={PenLine}
+            message="Choose a class, an exam and a subject to enter marks."
+          />
+        )}
+
+        {ready && (
+          <div className="rounded-lg border border-slate-200 bg-white shadow">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-3">
+              <span className="text-sm text-slate-600">
+                {loading ? "Loading..." : `${rows.length} student(s)`}
+              </span>
+              <label className="flex items-center gap-2 text-sm text-slate-700">
+                Total marks
                 <input
                   type="number"
-                  min="0"
-                  step="any"
-                  inputMode="decimal"
-                  value={r.marks}
-                  onChange={(e) => setMarks(r.studentId, e.target.value)}
-                  aria-label={`Marks for ${r.name}`}
-                  className="w-24 rounded border border-slate-300 px-2 py-1 text-right"
+                  min="1"
+                  value={totalMarks}
+                  onChange={(e) => setTotalMarks(e.target.value)}
+                  className="w-24 rounded border border-slate-300 px-2 py-1 focus:border-[#1a4033] focus:outline-none"
                 />
-              </li>
-            ))}
-          </ul>
-
-          {rows.length > 0 && (
-            <div className="flex justify-end border-t border-slate-100 px-4 py-3">
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="rounded bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
-              >
-                {saving ? "Saving..." : "Save marks"}
-              </button>
+              </label>
             </div>
-          )}
-        </div>
-      )}
-    </div>
+
+            {!loading && rows.length === 0 && (
+              <p className="px-4 py-6 text-center text-sm text-slate-500">
+                No active students in this class.
+              </p>
+            )}
+
+            <ul>
+              {rows.map((r) => (
+                <li
+                  key={r.studentId}
+                  className="flex items-center justify-between gap-3 border-t border-slate-100 px-4 py-3 first:border-t-0"
+                >
+                  <div>
+                    <div className="font-medium text-slate-800">{r.name}</div>
+                    <div className="text-xs text-slate-500">Roll no. {r.rollNumber}</div>
+                  </div>
+                  <input
+                    type="number"
+                    min="0"
+                    step="any"
+                    inputMode="decimal"
+                    value={r.marks}
+                    onChange={(e) => setMarks(r.studentId, e.target.value)}
+                    aria-label={`Marks for ${r.name}`}
+                    className={`w-24 rounded border px-2 py-1 text-right focus:border-[#1a4033] focus:outline-none ${
+  r.marks.trim() !== "" ? "border-green-300 bg-green-50" : "border-slate-300"
+}`}
+                  />
+                </li>
+              ))}
+            </ul>
+
+            {rows.length > 0 && (
+              <div className="sticky bottom-0 flex justify-end rounded-b-lg border-t border-slate-100 bg-white px-4 py-3">
+                <button
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="rounded bg-[#1a4033] px-5 py-2 text-sm font-medium text-white hover:bg-[#245a47] disabled:opacity-60"
+                >
+                  {saving ? "Saving..." : "Save marks"}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </>
   );
 }

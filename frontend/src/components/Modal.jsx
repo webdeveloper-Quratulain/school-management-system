@@ -9,18 +9,21 @@ export default function Modal({ title, onClose, children }) {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      className="dialog-backdrop fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-white p-6 shadow-lg"
+        role="dialog"
+        aria-modal="true"
+        aria-label={title}
+        className="dialog-panel max-h-[90vh] w-full max-w-md overflow-y-auto rounded-xl bg-white p-6 shadow-xl"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-800">{title}</h2>
+          <h2 className="text-lg font-semibold text-slate-900">{title}</h2>
           <button
             onClick={onClose}
-            className="text-slate-400 hover:text-slate-600"
+            className="rounded p-1 text-slate-400 hover:bg-slate-100 hover:text-slate-600"
             aria-label="Close"
           >
             ✕

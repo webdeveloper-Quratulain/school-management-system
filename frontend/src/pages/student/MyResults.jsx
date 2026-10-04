@@ -1,4 +1,6 @@
+import { Award } from "lucide-react";
 import StudentScope from "../../components/StudentScope";
+import EmptyState from "../../components/EmptyState";
 import { useApi } from "../../useApi";
 
 function View({ student }) {
@@ -6,24 +8,35 @@ function View({ student }) {
 
   if (loading) return <p className="text-slate-500">Loading...</p>;
   if (error) {
-    return <div className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>;
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        {error}
+      </div>
+    );
   }
   if (!data || data.length === 0) {
-    return <p className="text-sm text-slate-500">No results have been entered yet.</p>;
+    return <EmptyState icon={Award} message="No results have been entered yet." />;
   }
 
   return (
     <div>
       {data.map((exam) => (
-        <div key={exam.examId} className="mb-4 rounded-lg bg-white shadow">
+        <div
+          key={exam.examId}
+          className="mb-4 rounded-lg border border-slate-200 bg-white shadow"
+        >
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-4 py-3">
             <div>
-              <h2 className="font-semibold text-slate-800">{exam.exam}</h2>
+              <h2 className="font-semibold text-[#1a4033]">{exam.exam}</h2>
               <p className="text-xs text-slate-500">{exam.date.slice(0, 10)}</p>
             </div>
-            <div className="text-sm text-slate-700">
-              {exam.totalObtained} / {exam.totalMax} · {exam.percentage}% ·{" "}
-              <span className="font-semibold">Grade {exam.grade}</span>
+            <div className="flex items-center gap-2 text-sm text-slate-700">
+              <span>
+                {exam.totalObtained} / {exam.totalMax} · {exam.percentage}%
+              </span>
+              <span className="rounded-full bg-[#e3efe9] px-2.5 py-0.5 text-xs font-semibold text-[#1a4033]">
+                Grade {exam.grade}
+              </span>
             </div>
           </div>
           <div className="overflow-x-auto">
@@ -38,7 +51,7 @@ function View({ student }) {
               </thead>
               <tbody>
                 {exam.subjects.map((s) => (
-                  <tr key={s.subject} className="border-t border-slate-100">
+                  <tr key={s.subject} className="border-t border-slate-100 hover:bg-slate-50">
                     <td className="px-4 py-2 font-medium text-slate-800">{s.subject}</td>
                     <td className="px-4 py-2">
                       {s.marks} / {s.totalMarks}

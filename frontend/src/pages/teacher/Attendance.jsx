@@ -1,3 +1,6 @@
+import { GraduationCap } from "lucide-react";
+import PageHeader from "../../components/PageHeader";
+import EmptyState from "../../components/EmptyState";
 import { useEffect, useState } from "react";
 import { api } from "../../api";
 import { useClasses } from "../../useClasses";
@@ -25,6 +28,8 @@ export default function Attendance() {
   const loading = ready && sheet.key !== key;
   const rows = sheet.key === key ? sheet.rows : [];
   const unmarked = rows.filter((r) => !r.status).length;
+  const count = (s) => rows.filter((r) => r.status === s).length;
+  const showStats = ready && !loading && rows.length > 0;
 
   useEffect(() => {
     if (!ready) return;
@@ -44,6 +49,19 @@ export default function Attendance() {
       cancelled = true;
     };
   }, [ready, key, classId, date]);
+    // hide the green message after 4 seconds
+  useEffect(() => {
+    if (!message) return;
+    const t = setTimeout(() => setMessage(""), 4000);
+    return () => clearTimeout(t);
+  }, [message]);
+
+  // hide the red error after 6 seconds
+  useEffect(() => {
+    if (!error) return;
+    const t = setTimeout(() => setError(""), 6000);
+    return () => clearTimeout(t);
+  }, [error]);
 
   function changeFilter(setter) {
     return (e) => {
@@ -93,17 +111,33 @@ export default function Attendance() {
   const shownError = error || classesError;
 
   return (
-    <div>
-      <h1 className="mb-4 text-2xl font-semibold text-slate-800">Attendance</h1>
+  <>
+    <PageHeader
+  title="Attendance"
+  subtitle="Mark who is present, absent or late for a class."
+>
+  {showStats && (
+    <>
+      <span className="stat-chip stat-chip--present"><b>{count("PRESENT")}</b> Present</span>
+      <span className="stat-chip stat-chip--absent"><b>{count("ABSENT")}</b> Absent</span>
+      <span className="stat-chip stat-chip--late"><b>{count("LATE")}</b> Late</span>
+      {count("LEAVE") > 0 && (
+        <span className="stat-chip stat-chip--leave"><b>{count("LEAVE")}</b> Leave</span>
+      )}
+      <span className="stat-chip stat-chip--none"><b>{unmarked}</b> Not marked</span>
+    </>
+  )}
+</PageHeader>
 
+    <div className="page-body">
       {shownError && (
-        <div className="mb-4 rounded bg-red-50 px-3 py-2 text-sm text-red-700">{shownError}</div>
+        <div className="mb-4 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-700">{message}</div>
       )}
       {message && (
         <div className="mb-4 rounded bg-green-50 px-3 py-2 text-sm text-green-700">{message}</div>
       )}
 
-      <div className="mb-4 flex flex-wrap gap-3">
+      <div className="card mb-4 flex flex-wrap gap-3">
         <div className="min-w-48 flex-1">
           <label className="mb-1 block text-sm font-medium text-slate-700" htmlFor="class">
             Class
@@ -141,6 +175,12 @@ export default function Attendance() {
           No classes are assigned to you yet. Ask the admin to assign you to a class.
         </p>
       )}
+      {!classId && classes.length > 0 && (
+  <EmptyState
+    icon={GraduationCap}
+    message="Choose a class and a date to take attendance."
+  />
+)}
 
       {ready && (
         <div className="rounded-lg bg-white shadow">
@@ -197,18 +237,19 @@ export default function Attendance() {
           </ul>
 
           {rows.length > 0 && (
-            <div className="flex justify-end border-t border-slate-100 px-4 py-3">
-              <button
-                onClick={handleSave}
-                disabled={saving}
-                className="rounded bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
-              >
-                {saving ? "Saving..." : "Save attendance"}
-              </button>
-            </div>
-          )}
+  <div className="flex justify-end border-t border-slate-100 px-4 py-3">
+    <button
+      onClick={handleSave}
+      disabled={saving}
+      className="rounded bg-[#1a4033] px-5 py-2 text-sm font-medium text-white hover:bg-[#245a47] disabled:opacity-60"
+    >
+      {saving ? "Saving..." : "Save attendance"}
+    </button>
+  </div>
+)}
         </div>
       )}
-    </div>
-  );
+       </div>
+  </>
+);
 }

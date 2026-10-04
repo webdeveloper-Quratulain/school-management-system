@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
+import { Layers } from "lucide-react";
 import { api } from "../../api";
 import { useClasses } from "../../useClasses";
+import PageHeader from "../../components/PageHeader";
+import EmptyState from "../../components/EmptyState";
 
 const selectClass =
-  "w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm focus:border-indigo-500 focus:outline-none";
+  "w-full rounded border border-slate-300 bg-white px-3 py-2 text-sm focus:border-[#1a4033] focus:outline-none";
 const labelClass = "mb-1 block text-sm font-medium text-slate-700";
 
 export default function ClassSetup() {
@@ -40,6 +43,13 @@ export default function ClassSetup() {
   useEffect(() => {
     if (classId) loadItems(classId);
   }, [classId, loadItems]);
+
+  // hide the red error after 6 seconds
+  useEffect(() => {
+    if (!error) return;
+    const t = setTimeout(() => setError(""), 6000);
+    return () => clearTimeout(t);
+  }, [error]);
 
   const loading = Boolean(classId) && sheet.classId !== classId;
   const items = sheet.classId === classId ? sheet.items : [];
@@ -105,130 +115,162 @@ export default function ClassSetup() {
   const shownError = error || classesError;
 
   return (
-    <div>
-      <h1 className="mb-4 text-2xl font-semibold text-slate-800">Class setup</h1>
-      <p className="mb-4 text-sm text-slate-600">
-        Choose which subjects each class studies and which teacher teaches each one. Teachers can
-        only take attendance and enter marks for the classes and subjects assigned here.
-      </p>
+    <>
+      <PageHeader
+        title="Class setup"
+        subtitle="Choose which subjects each class studies and who teaches them."
+      >
+        {classId && !loading && (
+          <span className="stat-chip stat-chip--present">
+            <b>{items.length}</b> {items.length === 1 ? "subject" : "subjects"}
+          </span>
+        )}
+      </PageHeader>
 
-      {shownError && (
-        <div className="mb-4 rounded bg-red-50 px-3 py-2 text-sm text-red-700">{shownError}</div>
-      )}
+      <div className="page-body">
+        <p className="mb-4 text-sm text-slate-600">
+          Teachers can only take attendance and enter marks for the classes and subjects assigned
+          here.
+        </p>
 
-      <div className="mb-4 max-w-sm">
-        <label className={labelClass} htmlFor="class">Class</label>
-        <select id="class" value={classId} onChange={handleClassChange} className={selectClass}>
-          <option value="">{classesLoading ? "Loading..." : "Choose a class"}</option>
-          {classes.map((c) => (
-            <option key={c.id} value={c.id}>
-              {c.name} {c.section}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      {classId && (
-        <>
-          <div className="mb-4 overflow-x-auto rounded-lg bg-white shadow">
-            <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 text-slate-600">
-                <tr>
-                  <th className="px-4 py-3">Subject</th>
-                  <th className="px-4 py-3">Teacher</th>
-                  <th className="px-4 py-3 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {loading && (
-                  <tr>
-                    <td colSpan={3} className="px-4 py-6 text-center text-slate-500">
-                      Loading...
-                    </td>
-                  </tr>
-                )}
-                {!loading && items.length === 0 && (
-                  <tr>
-                    <td colSpan={3} className="px-4 py-6 text-center text-slate-500">
-                      No subjects assigned to this class yet.
-                    </td>
-                  </tr>
-                )}
-                {items.map((item) => (
-                  <tr key={item.id} className="border-t border-slate-100">
-                    <td className="px-4 py-3 font-medium text-slate-800">{item.subject.name}</td>
-                    <td className="px-4 py-3">
-                      <select
-                        value={item.teacherId ?? ""}
-                        onChange={(e) => handleTeacherChange(item, e.target.value)}
-                        aria-label={`Teacher for ${item.subject.name}`}
-                        className="rounded border border-slate-300 bg-white px-2 py-1 text-sm"
-                      >
-                        <option value="">No teacher yet</option>
-                        {teachers.map((t) => (
-                          <option key={t.id} value={t.id}>
-                            {t.user.name}
-                          </option>
-                        ))}
-                      </select>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <button
-                        onClick={() => handleRemove(item)}
-                        className="text-red-600 hover:underline"
-                      >
-                        Remove
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        {shownError && (
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {shownError}
           </div>
+        )}
 
-          <form onSubmit={handleAdd} className="flex flex-wrap items-end gap-3 rounded-lg bg-white p-4 shadow">
-            <div className="min-w-44 flex-1">
-              <label className={labelClass} htmlFor="subject">Add a subject</label>
-              <select
-                id="subject"
-                value={subjectId}
-                onChange={(e) => setSubjectId(e.target.value)}
-                className={selectClass}
-              >
-                <option value="">Choose a subject</option>
-                {available.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
-                ))}
-              </select>
+        <div className="card mb-4 max-w-sm">
+          <label className={labelClass} htmlFor="class">Class</label>
+          <select id="class" value={classId} onChange={handleClassChange} className={selectClass}>
+            <option value="">{classesLoading ? "Loading..." : "Choose a class"}</option>
+            {classes.map((c) => (
+              <option key={c.id} value={c.id}>
+                {c.name} {c.section}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        {!classId && classes.length > 0 && (
+          <EmptyState
+            icon={Layers}
+            message="Choose a class to set up its subjects and teachers."
+          />
+        )}
+
+        {classId && (
+          <>
+            <div className="mb-4 overflow-x-auto rounded-lg border border-slate-200 bg-white shadow">
+              <table className="w-full text-left text-sm">
+                <thead className="bg-slate-50 text-slate-600">
+                  <tr>
+                    <th className="px-4 py-3">Subject</th>
+                    <th className="px-4 py-3">Teacher</th>
+                    <th className="px-4 py-3 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {loading && (
+                    <tr>
+                      <td colSpan={3} className="px-4 py-6 text-center text-slate-500">
+                        Loading...
+                      </td>
+                    </tr>
+                  )}
+                  {!loading && items.length === 0 && (
+                    <tr>
+                      <td colSpan={3} className="px-4 py-6 text-center text-slate-500">
+                        No subjects assigned to this class yet. Add one below.
+                      </td>
+                    </tr>
+                  )}
+                  {items.map((item) => (
+                    <tr key={item.id} className="border-t border-slate-100 hover:bg-slate-50">
+                      <td className="px-4 py-3 font-medium text-slate-800">
+                        {item.subject.name}
+                      </td>
+                      <td className="px-4 py-3">
+                        <select
+                          value={item.teacherId ?? ""}
+                          onChange={(e) => handleTeacherChange(item, e.target.value)}
+                          aria-label={`Teacher for ${item.subject.name}`}
+                          className="rounded border border-slate-300 bg-white px-2 py-1 text-sm"
+                        >
+                          <option value="">No teacher yet</option>
+                          {teachers.map((t) => (
+                            <option key={t.id} value={t.id}>
+                              {t.user.name}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <button
+                          onClick={() => handleRemove(item)}
+                          className="text-red-600 hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <div className="min-w-44 flex-1">
-              <label className={labelClass} htmlFor="teacher">Teacher (optional)</label>
-              <select
-                id="teacher"
-                value={teacherId}
-                onChange={(e) => setTeacherId(e.target.value)}
-                className={selectClass}
-              >
-                <option value="">No teacher yet</option>
-                {teachers.map((t) => (
-                  <option key={t.id} value={t.id}>
-                    {t.user.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <button
-              type="submit"
-              disabled={saving || !subjectId}
-              className="rounded bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-60"
+
+            <form
+              onSubmit={handleAdd}
+              className="card flex flex-wrap items-end gap-3"
             >
-              {saving ? "Adding..." : "Add"}
-            </button>
-          </form>
-        </>
-      )}
-    </div>
+              <div className="min-w-44 flex-1">
+                <label className={labelClass} htmlFor="subject">Add a subject</label>
+                <select
+                  id="subject"
+                  value={subjectId}
+                  onChange={(e) => setSubjectId(e.target.value)}
+                  className={selectClass}
+                >
+                  <option value="">Choose a subject</option>
+                  {available.map((s) => (
+                    <option key={s.id} value={s.id}>
+                      {s.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="min-w-44 flex-1">
+                <label className={labelClass} htmlFor="teacher">Teacher (optional)</label>
+                <select
+                  id="teacher"
+                  value={teacherId}
+                  onChange={(e) => setTeacherId(e.target.value)}
+                  className={selectClass}
+                >
+                  <option value="">No teacher yet</option>
+                  {teachers.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.user.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <button
+                type="submit"
+                disabled={saving || !subjectId}
+                className="rounded bg-[#1a4033] px-4 py-2 text-sm font-medium text-white hover:bg-[#245a47] disabled:opacity-60"
+              >
+                {saving ? "Adding..." : "Add"}
+              </button>
+            </form>
+          </>
+        )}
+
+        {!classesLoading && classes.length === 0 && (
+          <p className="text-sm text-slate-500">
+            No classes yet. Create one on the Classes page first.
+          </p>
+        )}
+      </div>
+    </>
   );
 }

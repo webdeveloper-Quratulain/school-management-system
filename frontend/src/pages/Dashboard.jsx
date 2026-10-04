@@ -1,17 +1,34 @@
+import {
+  CalendarCheck,
+  CalendarDays,
+  GraduationCap,
+  Presentation,
+  School,
+  UserPlus,
+  Users,
+} from "lucide-react";
 import { Link } from "react-router";
 import { useAuth } from "../AuthContext";
 import { useApi } from "../useApi";
 
 const today = () => new Date().toLocaleDateString("en-CA");
-const money = (n) => Number(n).toFixed(2);
+const money = (n) =>
+  Number(n).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 const when = (iso) =>
   new Date(iso).toLocaleDateString([], { day: "numeric", month: "short", year: "numeric" });
 
-function Stat({ label, value, tone = "text-slate-800" }) {
+function Stat({ label, value, tone = "text-slate-900", icon: Icon }) {
   return (
-    <div className="rounded-lg bg-white p-4 shadow">
-      <div className="text-xs text-slate-500">{label}</div>
-      <div className={`text-2xl font-semibold ${tone}`}>{value}</div>
+    <div className="flex items-center gap-4 rounded-lg bg-white p-4 shadow">
+      {Icon && (
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#e3efe9] text-[#1a4033]">
+          <Icon size={22} aria-hidden="true" />
+        </span>
+      )}
+      <div>
+        <div className={`font-display text-3xl font-semibold leading-none ${tone}`}>{value}</div>
+        <div className="mt-1 text-sm text-slate-500">{label}</div>
+      </div>
     </div>
   );
 }
@@ -22,9 +39,9 @@ function Panel({ title, link, linkLabel, children }) {
       <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
         <h2 className="font-semibold text-slate-800">{title}</h2>
         {link && (
-          <Link to={link} className="text-sm text-indigo-600 hover:underline">
-            {linkLabel}
-          </Link>
+          <Link to={link} className="text-sm font-medium text-[#1a4033] hover:underline">
+  {linkLabel} →
+</Link>
         )}
       </div>
       <div className="px-4 py-3">{children}</div>
@@ -89,10 +106,10 @@ function AdminView({ d }) {
   return (
     <>
       <div className="mb-4 grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <Stat label="Students" value={d.counts.students} />
-        <Stat label="Teachers" value={d.counts.teachers} />
-        <Stat label="Parents" value={d.counts.parents} />
-        <Stat label="Classes" value={d.counts.classes} />
+        <Stat label="Students" value={d.counts.students} icon={GraduationCap} />
+        <Stat label="Teachers" value={d.counts.teachers} icon={Presentation} />
+        <Stat label="Parents" value={d.counts.parents} icon={Users} />
+        <Stat label="Classes" value={d.counts.classes} icon={School} />
       </div>
 
       <div className="mb-4 grid gap-4 lg:grid-cols-2">
@@ -232,13 +249,44 @@ export default function Dashboard() {
   const { user } = useAuth();
   const { data, loading, error } = useApi(`/dashboard?date=${today()}`);
   const dayName = new Date().toLocaleDateString([], { weekday: "long" });
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold text-slate-800">Welcome, {user.name}</h1>
-      <p className="mb-4 mt-1 text-sm text-slate-500">
-        {dayName}, {when(new Date().toISOString())}
-      </p>
+      <section className="welcome-banner">
+        <div className="welcome-banner__text">
+          <p className="welcome-banner__date">
+            {dayName}, {when(new Date().toISOString())}
+          </p>
+          <h1>
+            {greeting}, {user.name}
+          </h1>
+          <p className="welcome-banner__sub">Here is what is happening at school today.</p>
+
+          {user.role === "ADMIN" && (
+            <div className="welcome-banner__actions">
+              <Link to="/attendance" className="wb-btn wb-btn--primary">
+                <CalendarCheck size={18} aria-hidden="true" /> Take attendance
+              </Link>
+              <Link to="/students" className="wb-btn wb-btn--ghost">
+                <UserPlus size={18} aria-hidden="true" /> Add student
+              </Link>
+            </div>
+          )}
+          {user.role === "TEACHER" && (
+            <div className="welcome-banner__actions">
+              <Link to="/attendance" className="wb-btn wb-btn--primary">
+                <CalendarCheck size={18} aria-hidden="true" /> Take attendance
+              </Link>
+              <Link to="/my-schedule" className="wb-btn wb-btn--ghost">
+                <CalendarDays size={18} aria-hidden="true" /> My timetable
+              </Link>
+            </div>
+          )}
+        </div>
+        <GraduationCap className="welcome-banner__icon" size={96} strokeWidth={1.2} aria-hidden="true" />
+      </section>
 
       {loading && <p className="text-slate-500">Loading...</p>}
       {error && (

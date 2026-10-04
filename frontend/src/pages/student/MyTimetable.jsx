@@ -1,4 +1,6 @@
+import { CalendarDays } from "lucide-react";
 import StudentScope from "../../components/StudentScope";
+import EmptyState from "../../components/EmptyState";
 import { useApi } from "../../useApi";
 
 const DAYS = ["MONDAY", "TUESDAY", "WEDNESDAY", "THURSDAY", "FRIDAY", "SATURDAY", "SUNDAY"];
@@ -10,14 +12,20 @@ function View({ student }) {
   );
 
   if (!student.classId) {
-    return <p className="text-sm text-slate-500">{student.name} is not in a class yet.</p>;
+    return <EmptyState icon={CalendarDays} message={`${student.name} is not in a class yet.`} />;
   }
   if (loading) return <p className="text-slate-500">Loading...</p>;
   if (error) {
-    return <div className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>;
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        {error}
+      </div>
+    );
   }
   if (!data || data.length === 0) {
-    return <p className="text-sm text-slate-500">No timetable has been set for this class yet.</p>;
+    return (
+      <EmptyState icon={CalendarDays} message="No timetable has been set for this class yet." />
+    );
   }
 
   const days = DAYS.filter((d) => data.some((s) => s.day === d));
@@ -25,8 +33,8 @@ function View({ student }) {
   return (
     <div className="grid gap-4 md:grid-cols-2">
       {days.map((day) => (
-        <div key={day} className="rounded-lg bg-white shadow">
-          <h2 className="border-b border-slate-100 px-4 py-3 font-semibold text-slate-800">
+        <div key={day} className="rounded-lg border border-slate-200 bg-white shadow">
+          <h2 className="border-b border-slate-100 px-4 py-3 font-semibold text-[#1a4033]">
             {dayName(day)}
           </h2>
           <ul>

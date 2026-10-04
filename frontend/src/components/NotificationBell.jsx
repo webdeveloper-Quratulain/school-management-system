@@ -118,11 +118,11 @@ export default function NotificationBell() {
       {open && (
         <div className="absolute right-0 z-40 mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-lg bg-white shadow-lg ring-1 ring-slate-200">
           <div className="flex items-center justify-between border-b border-slate-100 px-4 py-2">
-            <span className="font-semibold text-slate-800">Notifications</span>
+            <span className="font-semibold text-[#1a4033]">Notifications</span>
             <button
               onClick={markAll}
               disabled={count === 0}
-              className="text-xs text-indigo-600 hover:underline disabled:text-slate-400 disabled:no-underline"
+              className="text-xs font-medium text-[#1a4033] hover:underline disabled:text-slate-400 disabled:no-underline"
             >
               Mark all as read
             </button>
@@ -146,7 +146,7 @@ export default function NotificationBell() {
                 <button
                   onClick={() => markRead(n)}
                   className={`block w-full border-t border-slate-100 px-4 py-3 text-left first:border-t-0 hover:bg-slate-50 ${
-                    n.isRead ? "" : "bg-indigo-50"
+                    n.isRead ? "" : "bg-[#fdf6e3]"
                   }`}
                 >
                   <div className="flex items-start justify-between gap-2">
@@ -159,7 +159,7 @@ export default function NotificationBell() {
                     </span>
                     {!n.isRead && (
                       <span
-                        className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-indigo-600"
+                        className="mt-1.5 h-2 w-2 shrink-0 rounded-full bg-[#f5b82e]"
                         aria-label="Unread"
                       />
                     )}

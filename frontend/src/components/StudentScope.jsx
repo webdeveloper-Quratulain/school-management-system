@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useApi } from "../useApi";
+import PageHeader from "./PageHeader";
 
 export default function StudentScope({ title, children }) {
   const { data: students, loading, error } = useApi("/students/mine");
@@ -7,16 +8,22 @@ export default function StudentScope({ title, children }) {
 
   if (loading) return <p className="text-slate-500">Loading...</p>;
   if (error) {
-    return <div className="rounded bg-red-50 px-3 py-2 text-sm text-red-700">{error}</div>;
+    return (
+      <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+        {error}
+      </div>
+    );
   }
   if (!students || students.length === 0) {
     return (
-      <div>
-        <h1 className="mb-2 text-2xl font-semibold text-slate-800">{title}</h1>
-        <p className="text-sm text-slate-500">
-          No student is linked to your account yet. Please contact the school office.
-        </p>
-      </div>
+      <>
+        <PageHeader title={title} />
+        <div className="page-body">
+          <p className="text-sm text-slate-500">
+            No student is linked to your account yet. Please contact the school office.
+          </p>
+        </div>
+      </>
     );
   }
 
@@ -26,14 +33,11 @@ export default function StudentScope({ title, children }) {
     : "No class yet";
 
   return (
-    <div>
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold text-slate-800">{title}</h1>
-          <p className="text-sm text-slate-500">
-            {student.name} · {classLabel} · Roll no. {student.rollNumber}
-          </p>
-        </div>
+    <>
+      <PageHeader
+        title={title}
+        subtitle={`${student.name} · ${classLabel} · Roll no. ${student.rollNumber}`}
+      >
         {students.length > 1 && (
           <select
             value={String(student.id)}
@@ -48,8 +52,9 @@ export default function StudentScope({ title, children }) {
             ))}
           </select>
         )}
-      </div>
-      {children(student)}
-    </div>
+      </PageHeader>
+
+      <div className="page-body">{children(student)}</div>
+    </>
   );
 }

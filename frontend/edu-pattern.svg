@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="360" viewBox="0 0 360 360" fill="none" stroke="#1c5646" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" opacity="0.1">
+  <!-- open book -->
+  <g transform="translate(60 60) rotate(-8) translate(-22 -15)">
+    <path d="M0 0c8-4 16-4 22 1 6-5 14-5 22-1v30c-8-4-16-4-22 1-6-5-14-5-22-1z"/>
+    <path d="M22 1v30"/>
+  </g>
+  <!-- graduation cap -->
+  <g transform="translate(200 50) rotate(6) translate(-24 -16)">
+    <path d="M0 12 24 2 48 12 24 22z"/>
+    <path d="M10 17v9c8 6 20 6 28 0v-9"/>
+    <path d="M48 12v14"/>
+  </g>
+  <!-- atom -->
+  <g transform="translate(300 130) scale(.8)">
+    <ellipse rx="22" ry="8"/>
+    <ellipse rx="22" ry="8" transform="rotate(60)"/>
+    <ellipse rx="22" ry="8" transform="rotate(120)"/>
+    <circle r="3"/>
+  </g>
+  <!-- pencil -->
+  <g transform="translate(95 170) rotate(-35) translate(-23 -5)">
+    <path d="M0 0H34L46 5 34 10H0z"/>
+    <path d="M34 0V10M8 0V10"/>
+  </g>
+  <!-- light bulb -->
+  <g transform="translate(210 175)">
+    <circle cx="0" cy="-6" r="12"/>
+    <path d="M-5 8V13H5V8M-4 17H4M-2 21H2"/>
+  </g>
+  <!-- check mark -->
+  <path transform="translate(270 220)" d="M-9 0-3 6 9-7"/>
+  <!-- globe -->
+  <g transform="translate(45 285)">
+    <circle r="14"/>
+    <ellipse rx="6" ry="14"/>
+    <path d="M-14 0H14"/>
+  </g>
+  <!-- ruler -->
+  <g transform="translate(170 290) rotate(-12) translate(-25 -6)">
+    <path d="M0 0H50V12H0z"/>
+    <path d="M8 0v6M16 0v8M24 0v6M32 0v8M40 0v6"/>
+  </g>
+  <!-- plus and equals -->
+  <path transform="translate(300 262)" d="M-6 0H6M0-6V6"/>
+  <path transform="translate(324 312)" d="M-6-3H6M-6 3H6"/>
+  <!-- dots -->
+  <g fill="#1c5646" stroke="none">
+    <circle cx="130" cy="112" r="2.5"/>
+    <circle cx="262" cy="84" r="2.5"/>
+    <circle cx="330" cy="40" r="2.5"/>
+    <circle cx="112" cy="236" r="2.5"/>
+    <circle cx="250" cy="330" r="2.5"/>
+    <circle cx="22" cy="170" r="2.5"/>
+  </g>
+</svg>
