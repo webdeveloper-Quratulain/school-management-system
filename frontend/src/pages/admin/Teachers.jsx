@@ -98,6 +98,26 @@ export default function Teachers() {
       setError(err.message);
     }
   }
+  async function setActive(person, isActive) {
+  try {
+    await api(`/users/${person.user.id}/status`, { method: "PATCH", body: { isActive } });
+    await load();
+  } catch (err) {
+    setError(err.message);
+  }
+}
+async function handleDelete(person) {
+  const ok = window.confirm(
+    `Permanently delete ${person.user.name}?\n\nThis only works for people with no records. It cannot be undone. To keep their history, use Deactivate instead.`
+  );
+  if (!ok) return;
+  try {
+    await api(`/users/${person.user.id}`, { method: "DELETE" });
+    await load();
+  } catch (err) {
+    setError(err.message);
+  }
+}
 
   return (
     <>
@@ -187,7 +207,23 @@ export default function Teachers() {
                         >
                           Deactivate
                         </button>
+                        
                       )}
+                      {!t.user.isActive && (
+                      <button
+                        onClick={() => setActive(t, true)}
+                        className="text-green-700 hover:underline"
+                      >
+                        Reactivate
+                      </button>
+                    )}
+                    <button
+                        onClick={() => handleDelete(t)}
+                        className="ml-3 text-slate-500 hover:text-red-600 hover:underline"
+                      >
+                        Delete
+                      </button>
+                    
                     </td>
                   </tr>
                 ))}

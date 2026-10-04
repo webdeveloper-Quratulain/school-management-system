@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "tsx watch src/server.js",
     "start": "tsx src/server.js",
-    "create-admin": "tsx src/scripts/createAdmin.js"
+    "create-admin": "tsx src/scripts/createAdmin.js",
+    "demo:clear": "tsx src/scripts/demoData.js clear",
+    "demo:seed": "tsx src/scripts/demoData.js seed"
   },
   "keywords": [],
   "author": "",

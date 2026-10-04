@@ -18,6 +18,7 @@ import examRoutes from "./routes/exams.js";
 import feeRoutes from "./routes/fees.js";
 import timetableRoutes from "./routes/timetable.js";
 import dashboardRoutes from "./routes/dashboard.js";
+import userRoutes from "./routes/users.js";
 
 if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
   console.error("JWT_SECRET is missing or too short. Put a random value of at least 32 characters in .env");
@@ -104,6 +105,7 @@ app.use("/api/exams", examRoutes);
 app.use("/api/fees", feeRoutes);
 app.use("/api/timetable", timetableRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/users", userRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ message: "Not found" });
